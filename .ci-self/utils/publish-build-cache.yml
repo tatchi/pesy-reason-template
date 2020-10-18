@@ -7,10 +7,10 @@ steps:
 
   # continueOnError because on windows it has a permission denied error but the
   # export succeeds.
-  - script: "esy export-dependencies"
+  - script: 'esy export-dependencies'
     continueOnError: true
     condition: and(succeeded(), eq(variables['Build.Reason'], 'IndividualCI'))
-    displayName: "esy export-dependencies"
+    displayName: 'esy export-dependencies'
     workingDirectory: $(Agent.HomeDirectory)/hello-reason
 
   - bash: pwd && ls _export/* && mv _export '$(Build.StagingDirectory)' && ls '$(Build.StagingDirectory)/_export/'
@@ -22,10 +22,19 @@ steps:
   #   workingDirectory: ''
   #   condition: and(succeeded(), eq(variables['Build.Reason'], 'IndividualCI'))
   #   displayName: '[Cache][Publish] Tar esy cache directory'
-
   # - bash: 'cd $(ESY__NPM_ROOT) && tar -czf $(Build.StagingDirectory)/npm-cache.tar .'
   #   condition: and(succeeded(), eq(variables['Build.SourceBranch'], variables['System.PullRequest.TargetBranch']))
   #   displayName: '[Cache][Publish] Tar npm cache directory'
+  - task: ArchiveFiles@2
+    inputs:
+      rootFolderOrFile: '$(Build.StagingDirectory)/_export/'
+      includeRootFolder: false
+      archiveType: 'zip'
+      #tarCompression: 'gz' # Optional. Options: gz, bz2, xz, none
+      archiveFile: 'cache-$(Agent.OS)-install-$(esy__ci_cache_version)'
+      #replaceExistingArchive: true
+      #verbose: # Optional
+      #quiet: # Optional
 
   - task: PublishBuildArtifacts@1
     displayName: '[Cache][Publish] Upload tarball'
@@ -33,7 +42,7 @@ steps:
     # TODO: The CI Build caches are pulled down by the last successful buildID
     # for the target branch.
     inputs:
-        pathToPublish: '$(Build.StagingDirectory)'
-        artifactName: 'cache-$(Agent.OS)-install-$(esy__ci_cache_version)'
-        parallel: true
-        parallelCount: 8
+      pathToPublish: '$(Build.StagingDirectory)/cache-$(Agent.OS)-install-$(esy__ci_cache_version)'
+      artifactName: 'cache-$(Agent.OS)-install-$(esy__ci_cache_version)'
+      parallel: true
+      parallelCount: 8
