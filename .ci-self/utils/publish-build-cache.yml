@@ -36,6 +36,10 @@ steps:
       #verbose: # Optional
       #quiet: # Optional
 
+  - bash: 'ls'
+    displayName: 'ls'
+    workingDirectory: $(Agent.StagingDirectory)
+
   - task: PublishBuildArtifacts@1
     displayName: '[Cache][Publish] Upload tarball'
     condition: and(succeeded(), eq(variables['Build.Reason'], 'IndividualCI'))
