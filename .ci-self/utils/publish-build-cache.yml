@@ -31,7 +31,7 @@ steps:
       includeRootFolder: false
       archiveType: 'zip'
       #tarCompression: 'gz' # Optional. Options: gz, bz2, xz, none
-      archiveFile: 'cache-$(Agent.OS)-install-$(esy__ci_cache_version).zip'
+      archiveFile: '$(Build.StagingDirectory)/cache-$(Agent.OS)-install-$(esy__ci_cache_version).zip'
       #replaceExistingArchive: true
       #verbose: # Optional
       #quiet: # Optional
