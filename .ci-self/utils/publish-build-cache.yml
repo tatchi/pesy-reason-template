@@ -38,7 +38,7 @@ steps:
 
   - bash: 'ls'
     displayName: 'ls'
-    workingDirectory: $(Agent.StagingDirectory)
+    workingDirectory: $(Build.StagingDirectory)
 
   - task: PublishBuildArtifacts@1
     displayName: '[Cache][Publish] Upload tarball'
