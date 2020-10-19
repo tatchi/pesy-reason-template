@@ -40,7 +40,7 @@ steps:
     displayName: 'ls'
     workingDirectory: $(Build.StagingDirectory)
 
-  - bash: 'node .ci-self/checksum.js $(Build.StagingDirectory)/checksum.zip > $(Build.StagingDirectory)/checksum.txt'
+  - script: 'node .ci-self/checksum.js $(Build.StagingDirectory)/checksum.zip > $(Build.StagingDirectory)/checksum.txt'
     displayName: 'Calculating sha1'
 
   - bash: 'shasum $(Build.StagingDirectory)/checksum.zip'
