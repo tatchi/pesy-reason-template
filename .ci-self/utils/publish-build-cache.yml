@@ -43,10 +43,18 @@ steps:
   - script: 'node .ci-self/checksum.js checksum.zip > checksum.txt'
     displayName: 'Calculating sha1'
     workingDirectory: $(Build.StagingDirectory)
+    continueOnError: true
 
   - bash: 'shasum checksum.zip'
     displayName: 'Calculating sha1 bis'
     workingDirectory: $(Build.StagingDirectory)
+    continueOnError: true
+
+  - bash: |
+      sha=($(shasum checksum.zip)); echo $sha;
+    displayName: 'Calculating sha1 bis2'
+    workingDirectory: $(Build.StagingDirectory)
+    continueOnError: true
 
   - bash: 'ls'
     displayName: 'ls'
