@@ -35,10 +35,11 @@ steps:
     displayName: '[Cache][Publish] Create cache directory'
     workingDirectory: $(Build.StagingDirectory)
 
+  - bash: 'echo test > file.txt'
+    condition: and(succeeded(), eq(variables['Build.Reason'], 'IndividualCI'))
+    displayName: '[Cache][Publish] Create cache directory'
+    workingDirectory: $(Build.StagingDirectory)/_export
 
-  - bash: 'ls'
-    displayName: 'ls'
-    workingDirectory: $(Build.StagingDirectory)
 
   - task: ArchiveFiles@2
     inputs:
