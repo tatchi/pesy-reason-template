@@ -40,8 +40,12 @@ steps:
     displayName: 'ls'
     workingDirectory: $(Build.StagingDirectory)
 
-  - bash: "node .ci-self/checksum.js $(Build.StagingDirectory)/test.zip"
+  - bash: "node .ci-self/checksum.js $(Build.StagingDirectory)/test.zip > $(Build.StagingDirectory)/test.txt"
     displayName: "Calculating sha1"
+
+  - bash: 'ls'
+    displayName: 'ls'
+    workingDirectory: $(Build.StagingDirectory)
 
   - task: PublishBuildArtifacts@1
     displayName: '[Cache][Publish] Upload tarball'

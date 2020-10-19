@@ -15,5 +15,5 @@ s.on('data', function (data) {
 
 s.on('end', function () {
   var hash = shasum.digest('hex');
-  console.log(`SHA1: ${hash}`);
+  console.log(hash);
 });
