@@ -36,6 +36,10 @@ steps:
     workingDirectory: $(Build.StagingDirectory)
 
 
+  - bash: 'ls'
+    displayName: 'ls'
+    workingDirectory: $(Build.StagingDirectory)
+
   - task: ArchiveFiles@2
     inputs:
       rootFolderOrFile: '$(Build.StagingDirectory)/_export/'
