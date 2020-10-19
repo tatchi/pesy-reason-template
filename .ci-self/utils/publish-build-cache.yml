@@ -46,7 +46,7 @@ steps:
     # TODO: The CI Build caches are pulled down by the last successful buildID
     # for the target branch.
     inputs:
-      pathToPublish: '$(Build.StagingDirectory)'
+      pathToPublish: '$(Build.StagingDirectory)/test.zip'
       artifactName: 'cache-$(Agent.OS)-install-$(esy__ci_cache_version).zip'
       parallel: true
       parallelCount: 8
