@@ -40,9 +40,21 @@ steps:
     displayName: 'ls'
     workingDirectory: $(Build.StagingDirectory)
 
-  - script: "node .ci-self/checksum.js test.zip"
+  - script: "node .ci-self/checksum.js $(Build.StagingDirectory)/test.zip"
     displayName: "Calculating sha1"
-    workingDirectory: $(Build.StagingDirectory)
+    continueOnError: true
+
+  - bash: "node .ci-self/checksum.js $(Build.StagingDirectory)/test.zip"
+    displayName: "Calculating sha0"
+    continueOnError: true
+
+  - script: "node ./checksum.js $(Build.StagingDirectory)/test.zip"
+    displayName: "Calculating sha2"
+    continueOnError: true
+
+  - bash: "node ./checksum.js $(Build.StagingDirectory)/test.zip"
+    displayName: "Calculating sha3"
+    continueOnError: true
 
   - task: PublishBuildArtifacts@1
     displayName: '[Cache][Publish] Upload tarball'
