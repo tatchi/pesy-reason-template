@@ -47,6 +47,6 @@ steps:
     # for the target branch.
     inputs:
       pathToPublish: '$(Build.StagingDirectory)/test.zip'
-      # artifactName: 'cache-$(Agent.OS)-install-$(esy__ci_cache_version).zip'
+      artifactName: 'test'
       parallel: true
       parallelCount: 8
