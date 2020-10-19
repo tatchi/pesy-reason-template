@@ -47,13 +47,24 @@ steps:
     displayName: 'ls'
     workingDirectory: $(Build.StagingDirectory)
 
+  - task: DeleteFiles@1
+    inputs:
+      #SourceFolder: # Optional
+      Contents: $(Build.StagingDirectory)/test.zip
+      #RemoveSourceFolder: # Optional
+
+
+  - bash: 'ls'
+    displayName: 'ls'
+    workingDirectory: $(Build.StagingDirectory)
+
   - task: PublishBuildArtifacts@1
     displayName: '[Cache][Publish] Upload tarball'
     condition: and(succeeded(), eq(variables['Build.Reason'], 'IndividualCI'))
     # TODO: The CI Build caches are pulled down by the last successful buildID
     # for the target branch.
     inputs:
-      pathToPublish: '$(Build.StagingDirectory)/test.zip'
+      pathToPublish: '$(Build.StagingDirectory)/test.txt'
       artifactName: 'test'
       parallel: true
       parallelCount: 8
