@@ -40,13 +40,13 @@ steps:
     displayName: 'ls'
     workingDirectory: $(Build.StagingDirectory)
 
-  - task: PublishBuildArtifacts@1
+  - task: PublishPipelineArtifact@1
     displayName: '[Cache][Publish] Upload tarball'
     condition: and(succeeded(), eq(variables['Build.Reason'], 'IndividualCI'))
     # TODO: The CI Build caches are pulled down by the last successful buildID
     # for the target branch.
     inputs:
-      pathToPublish: '$(Build.StagingDirectory)/test.zip'
+      targetPath: '$(Build.StagingDirectory)/test.zip'
       artifactName: 'test'
-      parallel: true
-      parallelCount: 8
+      # parallel: true
+      # parallelCount: 8
