@@ -40,13 +40,17 @@ steps:
     displayName: 'ls'
     workingDirectory: $(Build.StagingDirectory)
 
-  - task: PublishPipelineArtifact@1
+  - script: "node .ci-self/checksum.js test.zip"
+    displayName: "Calculating sha1"
+    workingDirectory: $(Build.StagingDirectory)
+
+  - task: PublishBuildArtifacts@1
     displayName: '[Cache][Publish] Upload tarball'
     condition: and(succeeded(), eq(variables['Build.Reason'], 'IndividualCI'))
     # TODO: The CI Build caches are pulled down by the last successful buildID
     # for the target branch.
     inputs:
-      targetPath: '$(Build.StagingDirectory)/test.zip'
-      artifactName: 'test'
-      # parallel: true
-      # parallelCount: 8
+      pathToPublish: '$(Build.StagingDirectory)/test.zip'
+      artifactName: 'test.zip'
+      parallel: true
+      parallelCount: 8
