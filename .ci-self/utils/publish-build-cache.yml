@@ -1,53 +1,40 @@
 # Steps for publishing project cache
 
 steps:
-  # - bash: 'mkdir -p $(Build.StagingDirectory)'
-  #   condition: and(succeeded(), eq(variables['Build.Reason'], 'IndividualCI'))
-  #   displayName: '[Cache][Publish] Create cache directory'
+  - bash: 'mkdir -p $(Build.StagingDirectory)'
+    condition: and(succeeded(), eq(variables['Build.Reason'], 'IndividualCI'))
+    displayName: '[Cache][Publish] Create cache directory'
 
-  # # continueOnError because on windows it has a permission denied error but the
-  # # export succeeds.
-  # - script: 'esy export-dependencies'
-  #   continueOnError: true
-  #   condition: and(succeeded(), eq(variables['Build.Reason'], 'IndividualCI'))
-  #   displayName: 'esy export-dependencies'
-  #   workingDirectory: $(Agent.HomeDirectory)/hello-reason
+  # continueOnError because on windows it has a permission denied error but the
+  # export succeeds.
+  - script: 'esy export-dependencies'
+    continueOnError: true
+    condition: and(succeeded(), eq(variables['Build.Reason'], 'IndividualCI'))
+    displayName: 'esy export-dependencies'
+    workingDirectory: $(Agent.HomeDirectory)/hello-reason
 
-  # - bash: pwd && ls _export/* && mv _export '$(Build.StagingDirectory)' && ls '$(Build.StagingDirectory)/_export/'
-  #   condition: and(succeeded(), eq(variables['Build.Reason'], 'IndividualCI'))
-  #   displayName: '[Cache][Publish] move export to staging dir'
-  #   workingDirectory: $(Agent.HomeDirectory)/hello-reason
+  - bash: pwd && ls _export/* && mv _export '$(Build.StagingDirectory)' && ls '$(Build.StagingDirectory)/_export/'
+    condition: and(succeeded(), eq(variables['Build.Reason'], 'IndividualCI'))
+    displayName: '[Cache][Publish] move export to staging dir'
+    workingDirectory: $(Agent.HomeDirectory)/hello-reason
 
   # - bash: cd $ESY__CACHE_INSTALL_PATH && tar -czf $(Build.StagingDirectory)/esy-cache.tar .
   #   workingDirectory: ''
   #   condition: and(succeeded(), eq(variables['Build.Reason'], 'IndividualCI'))
   #   displayName: '[Cache][Publish] Tar esy cache directory'
+
   # - bash: 'cd $(ESY__NPM_ROOT) && tar -czf $(Build.StagingDirectory)/npm-cache.tar .'
   #   condition: and(succeeded(), eq(variables['Build.SourceBranch'], variables['System.PullRequest.TargetBranch']))
   #   displayName: '[Cache][Publish] Tar npm cache directory'
 
-  - bash: 'mkdir -p $(Build.StagingDirectory)'
-    condition: and(succeeded(), eq(variables['Build.Reason'], 'IndividualCI'))
-    displayName: '[Cache][Publish] Create cache directory'
-
-  - bash: 'mkdir -p _export'
-    condition: and(succeeded(), eq(variables['Build.Reason'], 'IndividualCI'))
-    displayName: '[Cache][Publish] Create cache directory'
-    workingDirectory: $(Build.StagingDirectory)
-
-  - bash: 'echo test > file.txt'
-    condition: and(succeeded(), eq(variables['Build.Reason'], 'IndividualCI'))
-    displayName: '[Cache][Publish] Create cache directory'
-    workingDirectory: $(Build.StagingDirectory)/_export
-
-
   - task: ArchiveFiles@2
+    displayName: '[Cache][Publish] compress export'
     inputs:
       rootFolderOrFile: '$(Build.StagingDirectory)/_export/'
       includeRootFolder: false
       archiveType: 'zip'
       #tarCompression: 'gz' # Optional. Options: gz, bz2, xz, none
-      archiveFile: '$(Build.StagingDirectory)/checksum.zip'
+      archiveFile: '$(Build.StagingDirectory)/export.zip'
       #replaceExistingArchive: true
       #verbose: # Optional
       #quiet: # Optional
@@ -56,31 +43,10 @@ steps:
     displayName: 'ls'
     workingDirectory: $(Build.StagingDirectory)
 
-  # - script: 'node .ci-self/checksum.js checksum.zip > checksum.txt'
-  #   displayName: 'Calculating sha1'
-  #   workingDirectory: $(Build.StagingDirectory)
-  #   continueOnError: true
-
-  # - bash: 'shasum checksum.zip'
-  #   displayName: 'Calculating sha1 bis'
-  #   workingDirectory: $(Build.StagingDirectory)
-  #   continueOnError: true
-
-  - bash: 'sha1sum checksum.zip | cut -d " " -f 1'
-    displayName: 'Calculating sha1sum'
+  - bash: 'sha1sum export.zip | cut -d " " -f 1 > checksum.txt'
+    displayName: 'Calculating export sha1'
     workingDirectory: $(Build.StagingDirectory)
     continueOnError: true
-
-  - bash: 'sha1sum checksum.zip | cut -d " " -f 1 > checksum.txt'
-    displayName: 'Calculating sha1sum file'
-    workingDirectory: $(Build.StagingDirectory)
-    continueOnError: true
-
-  # - bash: |
-  #     sha=($(shasum checksum.zip)); echo $sha;
-  #   displayName: 'Calculating sha1 bis2'
-  #   workingDirectory: $(Build.StagingDirectory)
-  #   continueOnError: true
 
   - bash: 'ls'
     displayName: 'ls'
@@ -98,7 +64,7 @@ steps:
       parallelCount: 8
 
   - task: PublishBuildArtifacts@1
-    displayName: '[Cache][Publish] checksum'
+    displayName: '[Cache][Publish] upload checksum'
     condition: and(succeeded(), eq(variables['Build.Reason'], 'IndividualCI'))
     # TODO: The CI Build caches are pulled down by the last successful buildID
     # for the target branch.
@@ -113,10 +79,11 @@ steps:
     workingDirectory: $(Build.StagingDirectory)
 
   - task: DeleteFiles@1
+    displayName: 'Remove checksum files'
     inputs:
       SourceFolder: $(Build.StagingDirectory)
       Contents: |
-        checksum.zip
+        export.zip
         checksum.txt
 
   - bash: 'ls'
