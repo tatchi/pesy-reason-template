@@ -66,6 +66,11 @@ steps:
     workingDirectory: $(Build.StagingDirectory)
     continueOnError: true
 
+  - bash: 'sha1sum checksum.zip'
+    displayName: 'Calculating sha1sum'
+    workingDirectory: $(Build.StagingDirectory)
+    continueOnError: true
+
   - bash: |
       sha=($(shasum checksum.zip)); echo $sha;
     displayName: 'Calculating sha1 bis2'
