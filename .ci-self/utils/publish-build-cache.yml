@@ -28,34 +28,22 @@ steps:
   #   displayName: '[Cache][Publish] Tar npm cache directory'
 
   - task: ArchiveFiles@2
-    displayName: '[Cache][Publish] compress export'
+    displayName: '[Cache][Publish] compress export folder'
     inputs:
       rootFolderOrFile: '$(Build.StagingDirectory)/_export/'
       includeRootFolder: false
       archiveType: 'zip'
-      #tarCompression: 'gz' # Optional. Options: gz, bz2, xz, none
       archiveFile: '$(Build.StagingDirectory)/export.zip'
-      #replaceExistingArchive: true
-      #verbose: # Optional
-      #quiet: # Optional
-
-  - bash: 'ls'
-    displayName: 'ls'
-    workingDirectory: $(Build.StagingDirectory)
 
   - bash: 'shasum export.zip | cut -d " " -f 1 > checksum.txt'
-    displayName: 'Calculating export sha1 on Linux/Darwin'
+    displayName: '[Cache][Publish] calcule export.zip sha1 on Linux/Darwin'
     workingDirectory: $(Build.StagingDirectory)
     condition: or(eq(variables['Agent.OS'], 'Darwin'), eq(variables['Agent.OS'], 'Linux'))
 
   - bash: 'sha1sum export.zip | cut -d " " -f 1 > checksum.txt'
-    displayName: 'Calculating export sha1 on Windows'
+    displayName: '[Cache][Publish] calcule export.zip sha1 on Windows'
     workingDirectory: $(Build.StagingDirectory)
     condition: eq( variables['Agent.OS'], 'Windows_NT' )
-
-  - bash: 'ls'
-    displayName: 'ls'
-    workingDirectory: $(Build.StagingDirectory)
 
   - task: PublishBuildArtifacts@1
     displayName: '[Cache][Publish] Upload tarball'
@@ -71,8 +59,6 @@ steps:
   - task: PublishBuildArtifacts@1
     displayName: '[Cache][Publish] upload checksum'
     condition: and(succeeded(), eq(variables['Build.Reason'], 'IndividualCI'))
-    # TODO: The CI Build caches are pulled down by the last successful buildID
-    # for the target branch.
     inputs:
       pathToPublish: '$(Build.StagingDirectory)/checksum.txt'
       artifactName: 'cache-$(Agent.OS)-install-$(esy__ci_cache_version)-checksum'
@@ -90,7 +76,3 @@ steps:
       Contents: |
         export.zip
         checksum.txt
-
-  - bash: 'ls'
-    displayName: 'ls'
-    workingDirectory: $(Build.StagingDirectory)
