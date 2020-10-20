@@ -56,26 +56,31 @@ steps:
     displayName: 'ls'
     workingDirectory: $(Build.StagingDirectory)
 
-  - script: 'node .ci-self/checksum.js checksum.zip > checksum.txt'
-    displayName: 'Calculating sha1'
-    workingDirectory: $(Build.StagingDirectory)
-    continueOnError: true
+  # - script: 'node .ci-self/checksum.js checksum.zip > checksum.txt'
+  #   displayName: 'Calculating sha1'
+  #   workingDirectory: $(Build.StagingDirectory)
+  #   continueOnError: true
 
-  - bash: 'shasum checksum.zip'
-    displayName: 'Calculating sha1 bis'
-    workingDirectory: $(Build.StagingDirectory)
-    continueOnError: true
+  # - bash: 'shasum checksum.zip'
+  #   displayName: 'Calculating sha1 bis'
+  #   workingDirectory: $(Build.StagingDirectory)
+  #   continueOnError: true
 
-  - bash: 'sha1sum checksum.zip'
+  - bash: 'sha1sum checksum.zip | cut -d " " -f 1'
     displayName: 'Calculating sha1sum'
     workingDirectory: $(Build.StagingDirectory)
     continueOnError: true
 
-  - bash: |
-      sha=($(shasum checksum.zip)); echo $sha;
-    displayName: 'Calculating sha1 bis2'
+  - bash: 'sha1sum checksum.zip | cut -d " " -f 1 > checksum.txt'
+    displayName: 'Calculating sha1sum file'
     workingDirectory: $(Build.StagingDirectory)
     continueOnError: true
+
+  # - bash: |
+  #     sha=($(shasum checksum.zip)); echo $sha;
+  #   displayName: 'Calculating sha1 bis2'
+  #   workingDirectory: $(Build.StagingDirectory)
+  #   continueOnError: true
 
   - bash: 'ls'
     displayName: 'ls'
