@@ -13,8 +13,8 @@
     }
   },
   "pesy": {
-    "azure-project": "esy-dev/esy",
-    "github": "esy/pesy-reason-template"
+    "azure-project": "tatchi/tatchi",
+    "github": "tatchi/pesy-reason-template"
   },
   "buildDirs": {
     "library": {},
