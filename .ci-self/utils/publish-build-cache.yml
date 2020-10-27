@@ -51,10 +51,15 @@ steps:
     # TODO: The CI Build caches are pulled down by the last successful buildID
     # for the target branch.
     inputs:
-      pathToPublish: '$(Build.StagingDirectory)/_export'
+      pathToPublish: '$(Build.StagingDirectory)/export.zip'
       artifactName: 'cache-$(Agent.OS)-install-$(esy__ci_cache_version)'
       parallel: true
       parallelCount: 8
+
+  - task: PublishPipelineArtifact@1
+    inputs:
+      targetPath: '$(Build.StagingDirectory)/export.zip'
+      artifactName: 'cache-$(Agent.OS)-install-$(esy__ci_cache_version)-NEW'
 
   - task: PublishBuildArtifacts@1
     displayName: '[Cache][Publish] upload checksum'
