@@ -33,14 +33,14 @@ steps:
       rootFolderOrFile: '$(Build.StagingDirectory)/_export/'
       includeRootFolder: false
       archiveType: 'zip'
-      archiveFile: '$(Build.StagingDirectory)/export.zip'
+      archiveFile: '$(Build.StagingDirectory)/_export.zip'
 
-  - bash: 'shasum export.zip | cut -d " " -f 1 > checksum.txt'
+  - bash: 'shasum _export.zip | cut -d " " -f 1 > checksum.txt'
     displayName: '[Cache][Publish] calcule export.zip sha1 on Linux/Darwin'
     workingDirectory: $(Build.StagingDirectory)
     condition: or(eq(variables['Agent.OS'], 'Darwin'), eq(variables['Agent.OS'], 'Linux'))
 
-  - bash: 'sha1sum export.zip | cut -d " " -f 1 > checksum.txt'
+  - bash: 'sha1sum _export.zip | cut -d " " -f 1 > checksum.txt'
     displayName: '[Cache][Publish] calcule export.zip sha1 on Windows'
     workingDirectory: $(Build.StagingDirectory)
     condition: eq( variables['Agent.OS'], 'Windows_NT' )
@@ -51,15 +51,10 @@ steps:
     # TODO: The CI Build caches are pulled down by the last successful buildID
     # for the target branch.
     inputs:
-      pathToPublish: '$(Build.StagingDirectory)/export.zip'
+      pathToPublish: '$(Build.StagingDirectory)/_export.zip'
       artifactName: 'cache-$(Agent.OS)-install-$(esy__ci_cache_version)'
       parallel: true
       parallelCount: 8
-
-  - task: PublishPipelineArtifact@1
-    inputs:
-      targetPath: '$(Build.StagingDirectory)/export.zip'
-      artifactName: 'cache-$(Agent.OS)-install-$(esy__ci_cache_version)-NEW'
 
   - task: PublishBuildArtifacts@1
     displayName: '[Cache][Publish] upload checksum'
@@ -79,5 +74,9 @@ steps:
     inputs:
       SourceFolder: $(Build.StagingDirectory)
       Contents: |
-        export.zip
+        _export.zip
         checksum.txt
+
+  - bash: 'ls'
+    displayName: 'ls'
+    workingDirectory: $(Build.StagingDirectory)
